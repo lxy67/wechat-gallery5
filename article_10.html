@@ -1,42 +1,29 @@
-<!DOCTYPE html>
-<html>
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>A型胃炎合并幽门腺腺瘤内癌</title>
-	<style>
-		body {
-			font-family: Arial, sans-serif;
-			margin: 0;
-			padding: 20px;
-			background-color: #f5f5f5;
-		}
-		h1 {
-			font-size: 1.5rem;
-			margin-bottom: 20px;
-			color: #333;
-		}
-		.image-container {
-			display: grid;
-			grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-			gap: 15px;
-		}
-		img {
-			width: 100%;
-			border-radius: 5px;
-			box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-		}
-		@media (max-width: 600px) {
-			.image-container {
-				grid-template-columns: 1fr;
-			}
-			h1 {
-				font-size: 1.3rem;
-			}
-		}
-	</style>
-</head>
-<body>
-	<h1>A型胃炎合并幽门腺腺瘤内癌</h1>
-	<div class="image-container">
-<img src="images/article_10/image_1.jpg" alt="图片 1"><img src="images/article_10/image_2.jpg" alt="图片 2"><img src="images/article_10/image_3.jpg" alt="图片 3"><img src="images/article_10/image_4.jpg" alt="图片 4"><img src="images/article_10/image_5.jpg" alt="图片 5"><img src="images/article_10/image_6.jpg" alt="图片 6"><img src="images/article_10/image_7.jpg" alt="图片 7"><img src="images/article_10/image_8.jpg" alt="图片 8"><img src="images/article_10/image_9.jpg" alt="图片 9"></div></body></html>
+# Database Configuration
+DB_PATH=./database.sqlite
+
+# JWT Configuration
+JWT_SECRET=your_super_secret_jwt_key_change_this_in_production
+JWT_EXPIRES_IN=7d
+
+# Email Configuration (Gmail SMTP)
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_SECURE=false
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASS=your_app_password
+
+# Admin Email for notifications
+ADMIN_EMAIL=a178152369463@163.com
+
+# Twilio Configuration (for SMS verification)
+TWILIO_ACCOUNT_SID=your_twilio_account_sid
+TWILIO_AUTH_TOKEN=your_twilio_auth_token
+TWILIO_PHONE_NUMBER=your_twilio_phone_number
+
+# Server Configuration
+PORT=3000
+NODE_ENV=production
+
+# Rate Limiting
+RATE_LIMIT_WINDOW_MS=900000
+RATE_LIMIT_MAX_REQUESTS=100
