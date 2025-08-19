@@ -384,50 +384,120 @@
             }
         }
 
-        function loadUsers() {
-            // Simulated user data
-            const users = [
-                {
-                    id: 1,
-                    name: '张三',
-                    email: 'zhangsan@example.com',
-                    organization: '北京大学',
-                    research: '幽门螺杆菌耐药性研究',
-                    verified: 1,
-                    created_at: '2024-01-15 10:30:00',
-                    last_login: '2024-01-20 14:25:00'
+        async function loadUsers() {
+            try {
+                const response = await fetch('/api/admin/users');
+                if (response.ok) {
+                    const data = await response.json();
+                    const users = data.users || [];
+
+                    const tbody = document.getElementById('usersTable');
+                    if (users.length === 0) {
+                        tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #666;">暂无用户数据</td></tr>';
+                        stats.totalUsers = 0;
+                    } else {
+                        tbody.innerHTML = users.map(user => `
+                            <tr>
+                                <td>${user.id}</td>
+                                <td>${user.name}</td>
+                                <td>${user.email}</td>
+                                <td>${user.organization || '未填写'}</td>
+                                <td>${user.research || '未填写'}</td>
+                                <td>
+                                    <span class="status-badge ${user.verified ? 'status-verified' : 'status-pending'}">
+                                        ${user.verified ? '已验证' : '待验证'}
+                                    </span>
+                                </td>
+                                <td>${formatDateTime(user.created_at)}</td>
+                                <td>${user.last_login ? formatDateTime(user.last_login) : '从未登录'}</td>
+                            </tr>
+                        `).join('');
+                        stats.totalUsers = users.length;
+                    }
+                } else {
+                    console.error('Failed to load users:', response.status);
+                    // Fallback to demo data if API fails
+                    const tbody = document.getElementById('usersTable');
+                    tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #666;">无法加载用户数据</td></tr>';
+                    stats.totalUsers = 0;
                 }
-            ];
-
-            const tbody = document.getElementById('usersTable');
-            tbody.innerHTML = users.map(user => `
-                <tr>
-                    <td>${user.id}</td>
-                    <td>${user.name}</td>
-                    <td>${user.email}</td>
-                    <td>${user.organization}</td>
-                    <td>${user.research}</td>
-                    <td>
-                        <span class="status-badge ${user.verified ? 'status-verified' : 'status-pending'}">
-                            ${user.verified ? '已验证' : '待验证'}
-                        </span>
-                    </td>
-                    <td>${formatDateTime(user.created_at)}</td>
-                    <td>${user.last_login ? formatDateTime(user.last_login) : '从未登录'}</td>
-                </tr>
-            `).join('');
-
-            stats.totalUsers = users.length;
+            } catch (error) {
+                console.error('Error loading users:', error);
+                // Fallback to demo data if API fails
+                const tbody = document.getElementById('usersTable');
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; color: #666;">网络错误，无法加载数据</td></tr>';
+                stats.totalUsers = 0;
+            }
         }
 
-        function loadRegistrationLogs() {
-            const container = document.getElementById('registrationLogs');
-            container.innerHTML = '<div class="log-item"><div class="time">暂无注册记录</div></div>';
+        async function loadRegistrationLogs() {
+            try {
+                const response = await fetch('/api/admin/registration-logs');
+                if (response.ok) {
+                    const data = await response.json();
+                    const logs = data.logs || [];
+                    
+                    const container = document.getElementById('registrationLogs');
+                    if (logs.length === 0) {
+                        container.innerHTML = '<div class="log-item"><div class="time">暂无注册记录</div></div>';
+                    } else {
+                        container.innerHTML = logs.map(log => `
+                            <div class="log-item">
+                                <div class="time">${formatDateTime(log.timestamp)}</div>
+                                <div class="info">${log.name} 注册成功</div>
+                                <div class="details">${log.email} - ${log.organization || '未填写'}</div>
+                            </div>
+                        `).join('');
+                    }
+                    
+                    // Update today's registration count
+                    const today = new Date().toDateString();
+                    stats.todayRegistrations = logs.filter(log => 
+                        new Date(log.timestamp).toDateString() === today
+                    ).length;
+                } else {
+                    console.error('Failed to load registration logs:', response.status);
+                }
+            } catch (error) {
+                console.error('Error loading registration logs:', error);
+                const container = document.getElementById('registrationLogs');
+                container.innerHTML = '<div class="log-item"><div class="time">无法加载注册记录</div></div>';
+            }
         }
 
-        function loadLoginLogs() {
-            const container = document.getElementById('loginLogs');
-            container.innerHTML = '<div class="log-item"><div class="time">暂无登录记录</div></div>';
+        async function loadLoginLogs() {
+            try {
+                const response = await fetch('/api/admin/login-logs');
+                if (response.ok) {
+                    const data = await response.json();
+                    const logs = data.logs || [];
+                    
+                    const container = document.getElementById('loginLogs');
+                    if (logs.length === 0) {
+                        container.innerHTML = '<div class="log-item"><div class="time">暂无登录记录</div></div>';
+                    } else {
+                        container.innerHTML = logs.map(log => `
+                            <div class="log-item">
+                                <div class="time">${formatDateTime(log.timestamp)}</div>
+                                <div class="info">${log.name || '未知用户'} 登录</div>
+                                <div class="details">${log.email} - IP: ${log.ip_address}</div>
+                            </div>
+                        `).join('');
+                    }
+                    
+                    // Update today's login count
+                    const today = new Date().toDateString();
+                    stats.todayLogins = logs.filter(log => 
+                        new Date(log.timestamp).toDateString() === today
+                    ).length;
+                } else {
+                    console.error('Failed to load login logs:', response.status);
+                }
+            } catch (error) {
+                console.error('Error loading login logs:', error);
+                const container = document.getElementById('loginLogs');
+                container.innerHTML = '<div class="log-item"><div class="time">无法加载登录记录</div></div>';
+            }
         }
 
         function addRegistrationLog(data) {
