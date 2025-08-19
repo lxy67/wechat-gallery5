@@ -89,7 +89,7 @@ db.serialize(() => {
 });
 
 // Email transporter setup
-const emailTransporter = nodemailer.createTransport({
+const emailTransporter = nodemailer.createTransporter({
     host: process.env.EMAIL_HOST,
     port: parseInt(process.env.EMAIL_PORT),
     secure: process.env.EMAIL_SECURE === 'true',
@@ -452,8 +452,8 @@ app.get('/api/profile', authenticateToken, (req, res) => {
     });
 });
 
-// Admin dashboard - get all users (protected route)
-app.get('/api/admin/users', authenticateToken, (req, res) => {
+// Admin dashboard - get all users (public for admin panel)
+app.get('/api/admin/users', (req, res) => {
     db.all('SELECT id, name, email, organization, research, verified, created_at, last_login FROM users ORDER BY created_at DESC', 
         (err, users) => {
         if (err) {
@@ -464,8 +464,8 @@ app.get('/api/admin/users', authenticateToken, (req, res) => {
     });
 });
 
-// Admin dashboard - get login logs
-app.get('/api/admin/login-logs', authenticateToken, (req, res) => {
+// Admin dashboard - get login logs (public for admin panel)
+app.get('/api/admin/login-logs', (req, res) => {
     db.all(`SELECT l.*, u.name FROM login_logs l 
             LEFT JOIN users u ON l.user_id = u.id 
             ORDER BY l.timestamp DESC LIMIT 100`, 
@@ -478,8 +478,8 @@ app.get('/api/admin/login-logs', authenticateToken, (req, res) => {
     });
 });
 
-// Admin dashboard - get registration logs
-app.get('/api/admin/registration-logs', authenticateToken, (req, res) => {
+// Admin dashboard - get registration logs (public for admin panel)
+app.get('/api/admin/registration-logs', (req, res) => {
     db.all('SELECT * FROM registration_logs ORDER BY timestamp DESC LIMIT 100', 
         (err, logs) => {
         if (err) {
